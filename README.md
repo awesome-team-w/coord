@@ -26,8 +26,26 @@ are about to edit. The CLI is a bookkeeper, not a gatekeeper.
 
 ## Install
 
+### Prebuilt binaries (no Rust required)
+
+Download the archive for your platform (macOS arm64/x64, Linux x64/arm64)
+from the [latest release](https://github.com/awesome-team-w/coord/releases/latest),
+then:
+
+```sh
+tar -xzf coord-*.tar.gz
+sudo mv coord /usr/local/bin/
+```
+
+### From source
+
 ```sh
 cargo install --path cli
+```
+
+### Set up your repo
+
+```sh
 cd your-repo && coord init
 ```
 
