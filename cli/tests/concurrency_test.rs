@@ -25,6 +25,14 @@ fn exactly_one_winner_under_contention() {
         .into_iter()
         .map(|mut c| c.wait().unwrap().code().unwrap())
         .collect();
-    assert_eq!(codes.iter().filter(|&&c| c == 0).count(), 1, "codes: {codes:?}");
-    assert_eq!(codes.iter().filter(|&&c| c == 2).count(), n - 1, "codes: {codes:?}");
+    assert_eq!(
+        codes.iter().filter(|&&c| c == 0).count(),
+        1,
+        "codes: {codes:?}"
+    );
+    assert_eq!(
+        codes.iter().filter(|&&c| c == 2).count(),
+        n - 1,
+        "codes: {codes:?}"
+    );
 }

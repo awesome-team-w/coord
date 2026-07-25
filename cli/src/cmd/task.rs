@@ -33,7 +33,9 @@ pub fn done(root: &Path, id: i64) -> Result<()> {
     }
     let now = db::now();
     let released: Vec<String> = conn
-        .prepare("SELECT path FROM claims WHERE task_id = ?1 AND released_at IS NULL ORDER BY path")?
+        .prepare(
+            "SELECT path FROM claims WHERE task_id = ?1 AND released_at IS NULL ORDER BY path",
+        )?
         .query_map([id], |r| r.get(0))?
         .collect::<rusqlite::Result<_>>()?;
     conn.execute(

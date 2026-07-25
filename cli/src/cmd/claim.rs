@@ -27,7 +27,10 @@ pub fn run(root: &Path, cwd: &Path, task_id: i64, inputs: &[String], force: bool
     let active = db::active_claims(&tx)?;
     let mut conflicts = 0usize;
     for path in &normalized {
-        if active.iter().any(|c| c.task.id == task_id && c.path == *path) {
+        if active
+            .iter()
+            .any(|c| c.task.id == task_id && c.path == *path)
+        {
             println!("already claimed: {path}");
             continue;
         }
@@ -65,10 +68,16 @@ pub fn run(root: &Path, cwd: &Path, task_id: i64, inputs: &[String], force: bool
         )?;
         if forced {
             let others: Vec<String> = live.iter().map(|c| format!("T{}", c.task.id)).collect();
-            println!("registered {path} (FORCED co-edit with {})", others.join(", "));
+            println!(
+                "registered {path} (FORCED co-edit with {})",
+                others.join(", ")
+            );
         } else if !holders.is_empty() {
             let stale: Vec<String> = holders.iter().map(|c| format!("T{}", c.task.id)).collect();
-            println!("registered {path} (taken over from stale {})", stale.join(", "));
+            println!(
+                "registered {path} (taken over from stale {})",
+                stale.join(", ")
+            );
         } else {
             println!("registered {path}");
         }
@@ -77,8 +86,12 @@ pub fn run(root: &Path, cwd: &Path, task_id: i64, inputs: &[String], force: bool
 
     if conflicts > 0 {
         println!();
-        println!("{conflicts} path(s) occupied. Work on other files first, or check `coord status`;");
-        println!("if the edits are truly parallel-safe, re-run with --force to register co-editing.");
+        println!(
+            "{conflicts} path(s) occupied. Work on other files first, or check `coord status`;"
+        );
+        println!(
+            "if the edits are truly parallel-safe, re-run with --force to register co-editing."
+        );
         return Ok(2);
     }
     Ok(0)

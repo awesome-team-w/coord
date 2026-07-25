@@ -17,9 +17,15 @@ fn status_shows_tasks_claims_and_staleness() {
     let tmp = tempfile::tempdir().unwrap();
     common::setup(tmp.path());
     let t1 = common::start_task(tmp.path(), "refactor login flow");
-    common::coord(tmp.path()).args(["claim", "-t", &t1, "src/auth.ts"]).assert().success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t1, "src/auth.ts"])
+        .assert()
+        .success();
     let t2 = common::start_task(tmp.path(), "hotfix");
-    common::coord(tmp.path()).args(["claim", "-t", &t2, "src/auth.ts", "--force"]).assert().success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t2, "src/auth.ts", "--force"])
+        .assert()
+        .success();
 
     common::coord(tmp.path())
         .arg("status")
@@ -33,7 +39,10 @@ fn status_shows_tasks_claims_and_staleness() {
         );
 
     // Finished tasks disappear.
-    common::coord(tmp.path()).args(["task", "done", &t2]).assert().success();
+    common::coord(tmp.path())
+        .args(["task", "done", &t2])
+        .assert()
+        .success();
     common::coord(tmp.path())
         .arg("status")
         .assert()

@@ -25,7 +25,11 @@ pub fn run(root: &Path) -> Result<()> {
         );
         for c in claims.iter().filter(|c| c.task.id == task.id) {
             let forced = if c.forced { "  [forced co-edit]" } else { "" };
-            println!("  {}  claimed {}{forced}", c.path, db::fmt_age(now - c.claimed_at));
+            println!(
+                "  {}  claimed {}{forced}",
+                c.path,
+                db::fmt_age(now - c.claimed_at)
+            );
         }
     }
     Ok(())

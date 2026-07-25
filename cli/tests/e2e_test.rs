@@ -26,8 +26,14 @@ fn two_sessions_full_protocol() {
     // Session A starts refactoring auth; session B starts docs work.
     let ta = common::start_task(dir, "refactor auth");
     let tb = common::start_task(dir, "improve docs");
-    common::coord(dir).args(["claim", "-t", &ta, "src/auth.rs"]).assert().success();
-    common::coord(dir).args(["claim", "-t", &tb, "docs"]).assert().success();
+    common::coord(dir)
+        .args(["claim", "-t", &ta, "src/auth.rs"])
+        .assert()
+        .success();
+    common::coord(dir)
+        .args(["claim", "-t", &tb, "docs"])
+        .assert()
+        .success();
 
     // B wants auth too — refused with intel; B reorders to docs-only work.
     common::coord(dir)
@@ -43,16 +49,34 @@ fn two_sessions_full_protocol() {
     std::fs::write(dir.join("docs/guide.md"), "# guide\n").unwrap();
 
     // Both commit; neither sweeps the other's files.
-    common::coord(dir).args(["commit", "-t", &ta, "-m", "refactor: auth"]).assert().success();
-    common::coord(dir).args(["commit", "-t", &tb, "-m", "docs: guide"]).assert().success();
+    common::coord(dir)
+        .args(["commit", "-t", &ta, "-m", "refactor: auth"])
+        .assert()
+        .success();
+    common::coord(dir)
+        .args(["commit", "-t", &tb, "-m", "docs: guide"])
+        .assert()
+        .success();
     let a_files = git_stdout(dir, &["show", "--name-only", "--format=", "HEAD~1"]);
     let b_files = git_stdout(dir, &["show", "--name-only", "--format=", "HEAD"]);
     assert!(a_files.contains("src/auth.rs") && !a_files.contains("docs/guide.md"));
     assert!(b_files.contains("docs/guide.md") && !b_files.contains("src/auth.rs"));
 
     // A finishes; B can now claim auth.
-    common::coord(dir).args(["task", "done", &ta]).assert().success();
-    common::coord(dir).args(["claim", "-t", &tb, "src/auth.rs"]).assert().success();
-    common::coord(dir).args(["task", "done", &tb]).assert().success();
-    common::coord(dir).arg("status").assert().stdout(predicate::str::contains("No active tasks."));
+    common::coord(dir)
+        .args(["task", "done", &ta])
+        .assert()
+        .success();
+    common::coord(dir)
+        .args(["claim", "-t", &tb, "src/auth.rs"])
+        .assert()
+        .success();
+    common::coord(dir)
+        .args(["task", "done", &tb])
+        .assert()
+        .success();
+    common::coord(dir)
+        .arg("status")
+        .assert()
+        .stdout(predicate::str::contains("No active tasks."));
 }

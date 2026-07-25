@@ -5,7 +5,9 @@ use std::process::Command;
 
 pub fn run(root: &Path, task_id: i64, message: &str) -> Result<()> {
     if !root.join(".git").exists() {
-        bail!("not a git repository: `coord commit` needs git (the ledger itself works without it)");
+        bail!(
+            "not a git repository: `coord commit` needs git (the ledger itself works without it)"
+        );
     }
     let conn = db::open(root)?;
     let Some(task) = db::get_task(&conn, task_id)? else {
@@ -15,7 +17,9 @@ pub fn run(root: &Path, task_id: i64, message: &str) -> Result<()> {
         bail!("T{task_id} is already done");
     }
     let paths: Vec<String> = conn
-        .prepare("SELECT path FROM claims WHERE task_id = ?1 AND released_at IS NULL ORDER BY path")?
+        .prepare(
+            "SELECT path FROM claims WHERE task_id = ?1 AND released_at IS NULL ORDER BY path",
+        )?
         .query_map([task_id], |r| r.get(0))?
         .collect::<rusqlite::Result<_>>()?;
     if paths.is_empty() {

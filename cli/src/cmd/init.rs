@@ -38,7 +38,12 @@ fn inject_agents_block(root: &Path) -> Result<()> {
     let current = fs::read_to_string(&path).unwrap_or_default();
     let next = match (current.find(BLOCK_BEGIN), current.find(BLOCK_END)) {
         (Some(start), Some(end)) if end > start => {
-            format!("{}{}{}", &current[..start], block, &current[end + BLOCK_END.len()..])
+            format!(
+                "{}{}{}",
+                &current[..start],
+                block,
+                &current[end + BLOCK_END.len()..]
+            )
         }
         _ => {
             let mut s = current;

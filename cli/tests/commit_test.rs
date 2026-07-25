@@ -24,7 +24,10 @@ fn commit_stages_only_claimed_paths() {
     git_stdout(dir, &["commit", "-q", "-m", "initial"]);
 
     let t1 = common::start_task(dir, "write a");
-    common::coord(dir).args(["claim", "-t", &t1, "a.txt"]).assert().success();
+    common::coord(dir)
+        .args(["claim", "-t", &t1, "a.txt"])
+        .assert()
+        .success();
     std::fs::write(dir.join("a.txt"), "A\n").unwrap();
 
     // Another session's mess: an untracked file and a staged file.
@@ -62,11 +65,17 @@ fn commit_handles_directory_claims_and_deletions() {
     git_stdout(dir, &["commit", "-q", "-m", "initial"]);
 
     let t1 = common::start_task(dir, "rework mod");
-    common::coord(dir).args(["claim", "-t", &t1, "mod"]).assert().success();
+    common::coord(dir)
+        .args(["claim", "-t", &t1, "mod"])
+        .assert()
+        .success();
     std::fs::remove_file(dir.join("mod/old.rs")).unwrap();
     std::fs::write(dir.join("mod/new.rs"), "new\n").unwrap();
 
-    common::coord(dir).args(["commit", "-t", &t1, "-m", "refactor: rework mod"]).assert().success();
+    common::coord(dir)
+        .args(["commit", "-t", &t1, "-m", "refactor: rework mod"])
+        .assert()
+        .success();
     let files = git_stdout(dir, &["show", "--name-only", "--format=", "HEAD"]);
     assert!(files.contains("mod/new.rs"));
     assert!(files.contains("mod/old.rs")); // shown as deleted
@@ -96,7 +105,10 @@ fn commit_errors_without_git_claims_or_changes() {
         .stderr(predicate::str::contains("no claimed files"));
 
     // Claims exist but nothing on disk / tracked.
-    common::coord(tmp.path()).args(["claim", "-t", &t1, "ghost.rs"]).assert().success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t1, "ghost.rs"])
+        .assert()
+        .success();
     common::coord(tmp.path())
         .args(["commit", "-t", &t1, "-m", "m"])
         .assert()

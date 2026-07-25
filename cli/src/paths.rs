@@ -24,7 +24,10 @@ pub fn find_root(start: &Path) -> Option<PathBuf> {
 /// Accepts "12", "T12", "t12".
 pub fn parse_task_id(s: &str) -> Result<i64> {
     let t = s.trim();
-    let t = t.strip_prefix('T').or_else(|| t.strip_prefix('t')).unwrap_or(t);
+    let t = t
+        .strip_prefix('T')
+        .or_else(|| t.strip_prefix('t'))
+        .unwrap_or(t);
     t.parse::<i64>()
         .map_err(|_| anyhow!("invalid task id: {s} (expected e.g. T12)"))
 }
@@ -39,7 +42,11 @@ pub fn overlaps(a: &str, b: &str) -> bool {
 /// Purely lexical: claimed paths may not exist yet.
 pub fn normalize(root: &Path, cwd: &Path, input: &str) -> Result<String> {
     let p = Path::new(input.trim_end_matches('/'));
-    let abs = if p.is_absolute() { p.to_path_buf() } else { cwd.join(p) };
+    let abs = if p.is_absolute() {
+        p.to_path_buf()
+    } else {
+        cwd.join(p)
+    };
     let mut parts: Vec<OsString> = Vec::new();
     for comp in abs.components() {
         use std::path::Component::*;
@@ -95,10 +102,22 @@ mod tests {
     #[test]
     fn normalize_basic() {
         let root = Path::new("/repo");
-        assert_eq!(normalize(root, Path::new("/repo"), "src/a.rs").unwrap(), "src/a.rs");
-        assert_eq!(normalize(root, Path::new("/repo/src"), "./a.rs").unwrap(), "src/a.rs");
-        assert_eq!(normalize(root, Path::new("/repo/src"), "../lib/x.rs").unwrap(), "lib/x.rs");
-        assert_eq!(normalize(root, Path::new("/repo"), "/repo/a/b").unwrap(), "a/b");
+        assert_eq!(
+            normalize(root, Path::new("/repo"), "src/a.rs").unwrap(),
+            "src/a.rs"
+        );
+        assert_eq!(
+            normalize(root, Path::new("/repo/src"), "./a.rs").unwrap(),
+            "src/a.rs"
+        );
+        assert_eq!(
+            normalize(root, Path::new("/repo/src"), "../lib/x.rs").unwrap(),
+            "lib/x.rs"
+        );
+        assert_eq!(
+            normalize(root, Path::new("/repo"), "/repo/a/b").unwrap(),
+            "a/b"
+        );
         assert_eq!(normalize(root, Path::new("/repo"), "dir/").unwrap(), "dir");
     }
 

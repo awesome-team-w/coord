@@ -98,7 +98,10 @@ pub fn active_claims(conn: &Connection) -> Result<Vec<ActiveClaim>> {
 }
 
 pub fn now() -> i64 {
-    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as i64
 }
 
 pub fn fmt_duration(secs: i64) -> String {
@@ -140,11 +143,31 @@ mod tests {
     fn active_queries_filter_finished_and_released() {
         let tmp = tempfile::tempdir().unwrap();
         let conn = open(tmp.path()).unwrap();
-        conn.execute("INSERT INTO tasks (description, started_at) VALUES ('a', 1)", []).unwrap();
-        conn.execute("INSERT INTO tasks (description, started_at, finished_at) VALUES ('b', 1, 2)", []).unwrap();
-        conn.execute("INSERT INTO claims (task_id, path, claimed_at) VALUES (1, 'x.rs', 1)", []).unwrap();
-        conn.execute("INSERT INTO claims (task_id, path, claimed_at, released_at) VALUES (1, 'y.rs', 1, 2)", []).unwrap();
-        conn.execute("INSERT INTO claims (task_id, path, claimed_at) VALUES (2, 'z.rs', 1)", []).unwrap();
+        conn.execute(
+            "INSERT INTO tasks (description, started_at) VALUES ('a', 1)",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO tasks (description, started_at, finished_at) VALUES ('b', 1, 2)",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO claims (task_id, path, claimed_at) VALUES (1, 'x.rs', 1)",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO claims (task_id, path, claimed_at, released_at) VALUES (1, 'y.rs', 1, 2)",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO claims (task_id, path, claimed_at) VALUES (2, 'z.rs', 1)",
+            [],
+        )
+        .unwrap();
         assert_eq!(active_tasks(&conn).unwrap().len(), 1);
         let claims = active_claims(&conn).unwrap();
         assert_eq!(claims.len(), 1);

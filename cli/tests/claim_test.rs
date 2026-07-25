@@ -10,7 +10,10 @@ fn claim_free_paths_succeeds() {
         .args(["claim", "-t", &t1, "src/a.rs", "src/b.rs"])
         .assert()
         .success()
-        .stdout(predicate::str::contains("registered src/a.rs").and(predicate::str::contains("registered src/b.rs")));
+        .stdout(
+            predicate::str::contains("registered src/a.rs")
+                .and(predicate::str::contains("registered src/b.rs")),
+        );
 }
 
 #[test]
@@ -19,7 +22,10 @@ fn conflicting_claim_reports_holder_and_exits_2() {
     common::setup(tmp.path());
     let t1 = common::start_task(tmp.path(), "refactor login flow");
     let t2 = common::start_task(tmp.path(), "add rate limiting");
-    common::coord(tmp.path()).args(["claim", "-t", &t1, "src/auth.ts"]).assert().success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t1, "src/auth.ts"])
+        .assert()
+        .success();
     common::coord(tmp.path())
         .args(["claim", "-t", &t2, "src/auth.ts"])
         .assert()
@@ -44,11 +50,23 @@ fn directory_claims_contain_files_and_vice_versa() {
     common::setup(tmp.path());
     let t1 = common::start_task(tmp.path(), "own the src dir");
     let t2 = common::start_task(tmp.path(), "other");
-    common::coord(tmp.path()).args(["claim", "-t", &t1, "src"]).assert().success();
-    common::coord(tmp.path()).args(["claim", "-t", &t2, "src/deep/file.rs"]).assert().code(2);
-    common::coord(tmp.path()).args(["claim", "-t", &t2, "srclib/x.rs"]).assert().success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t1, "src"])
+        .assert()
+        .success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t2, "src/deep/file.rs"])
+        .assert()
+        .code(2);
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t2, "srclib/x.rs"])
+        .assert()
+        .success();
     // And a file blocks a parent-directory claim.
-    common::coord(tmp.path()).args(["claim", "-t", &t2, "."]).assert().code(1); // repo root is rejected outright
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t2, "."])
+        .assert()
+        .code(1); // repo root is rejected outright
 }
 
 #[test]
@@ -56,7 +74,10 @@ fn same_task_reclaim_is_idempotent() {
     let tmp = tempfile::tempdir().unwrap();
     common::setup(tmp.path());
     let t1 = common::start_task(tmp.path(), "task one");
-    common::coord(tmp.path()).args(["claim", "-t", &t1, "a.rs"]).assert().success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t1, "a.rs"])
+        .assert()
+        .success();
     common::coord(tmp.path())
         .args(["claim", "-t", &t1, "a.rs"])
         .assert()
@@ -70,7 +91,10 @@ fn force_registers_co_edit() {
     common::setup(tmp.path());
     let t1 = common::start_task(tmp.path(), "one");
     let t2 = common::start_task(tmp.path(), "two");
-    common::coord(tmp.path()).args(["claim", "-t", &t1, "hot.rs"]).assert().success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t1, "hot.rs"])
+        .assert()
+        .success();
     common::coord(tmp.path())
         .args(["claim", "-t", &t2, "hot.rs", "--force"])
         .assert()
@@ -83,7 +107,10 @@ fn stale_holder_is_taken_over() {
     let tmp = tempfile::tempdir().unwrap();
     common::setup(tmp.path());
     let t1 = common::start_task(tmp.path(), "will go stale");
-    common::coord(tmp.path()).args(["claim", "-t", &t1, "old.rs"]).assert().success();
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t1, "old.rs"])
+        .assert()
+        .success();
     std::thread::sleep(std::time::Duration::from_secs(2));
     let t2 = common::start_task(tmp.path(), "fresh task");
     common::coord(tmp.path())
@@ -99,7 +126,10 @@ fn claim_rejects_paths_outside_repo_and_unknown_task() {
     let tmp = tempfile::tempdir().unwrap();
     common::setup(tmp.path());
     let t1 = common::start_task(tmp.path(), "task one");
-    common::coord(tmp.path()).args(["claim", "-t", &t1, "../outside.rs"]).assert().code(1);
+    common::coord(tmp.path())
+        .args(["claim", "-t", &t1, "../outside.rs"])
+        .assert()
+        .code(1);
     common::coord(tmp.path())
         .args(["claim", "-t", "T99", "a.rs"])
         .assert()

@@ -4,7 +4,11 @@ use clap::{Parser, Subcommand};
 use std::path::{Path, PathBuf};
 
 #[derive(Parser)]
-#[command(name = "coord", version, about = "A shared task ledger coordinating parallel coding agents")]
+#[command(
+    name = "coord",
+    version,
+    about = "A shared task ledger coordinating parallel coding agents"
+)]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,
@@ -66,9 +70,17 @@ pub fn run() -> Result<i32> {
             cmd::task::done(&require_root(&cwd)?, paths::parse_task_id(&id)?)?;
             Ok(0)
         }
-        Cmd::Claim { task, paths: ps, force } => {
-            cmd::claim::run(&require_root(&cwd)?, &cwd, paths::parse_task_id(&task)?, &ps, force)
-        }
+        Cmd::Claim {
+            task,
+            paths: ps,
+            force,
+        } => cmd::claim::run(
+            &require_root(&cwd)?,
+            &cwd,
+            paths::parse_task_id(&task)?,
+            &ps,
+            force,
+        ),
         Cmd::Status => {
             cmd::status::run(&require_root(&cwd)?)?;
             Ok(0)

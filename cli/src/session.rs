@@ -76,7 +76,10 @@ mod tests {
         let me = sysinfo::Pid::from_u32(std::process::id());
         let my_name = sys.process(me).unwrap().name().to_string();
         assert!(is_alive(std::process::id() as i64, &my_name));
-        assert!(!is_alive(std::process::id() as i64, "definitely-not-this-name"));
+        assert!(!is_alive(
+            std::process::id() as i64,
+            "definitely-not-this-name"
+        ));
     }
 
     #[test]
@@ -95,12 +98,21 @@ mod tests {
         let sys = sysinfo::System::new_all();
         let me = sysinfo::Pid::from_u32(std::process::id());
         let my_name = sys.process(me).unwrap().name().to_string();
-        assert!(!is_stale(&task(Some(std::process::id() as i64), Some(&my_name), now - 10), now));
+        assert!(!is_stale(
+            &task(Some(std::process::id() as i64), Some(&my_name), now - 10),
+            now
+        ));
         // Fresh but pid dead: stale.
-        assert!(is_stale(&task(Some(99_999_999), Some("ghost"), now - 10), now));
+        assert!(is_stale(
+            &task(Some(99_999_999), Some("ghost"), now - 10),
+            now
+        ));
         // No pid recorded, young: not stale; over the limit: stale.
         assert!(!is_stale(&task(None, None, now - 10), now));
-        assert!(is_stale(&task(None, None, now - stale_limit_secs() - 1), now));
+        assert!(is_stale(
+            &task(None, None, now - stale_limit_secs() - 1),
+            now
+        ));
     }
 
     #[test]
