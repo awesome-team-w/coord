@@ -1,8 +1,8 @@
 # coord v1 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> Historical document: the task-by-task TDD plan that v1 was built from. Kept for reference; the checkboxes reflect the executed steps.
 
-**Goal:** Build `coord` — a shared task ledger (Rust CLI + AGENTS.md protocol block + Claude Code skill) that lets multiple coding agents edit one repository in parallel without stomping each other, per the spec at `docs/superpowers/specs/2026-07-25-coord-design.md`.
+**Goal:** Build `coord` — a shared task ledger (Rust CLI + AGENTS.md protocol block + Claude Code skill) that lets multiple coding agents edit one repository in parallel without stomping each other, per the spec at `docs/design.md`.
 
 **Architecture:** No daemon, no watching, no hooks. State lives in `<repo>/.agentcoord/state.db` (SQLite); every command is a short-lived process serialized by an IMMEDIATE transaction. Agents cooperate voluntarily: `task start` → `claim` → `commit` (scoped) → `task done`, driven by a managed block in AGENTS.md.
 
@@ -26,7 +26,7 @@ coord/
 ├── .gitignore                     # Task 1 (cli/target)
 ├── templates/AGENTS-block.md      # Task 5 — protocol copy injected into AGENTS.md
 ├── skill/SKILL.md                 # Task 11 — Claude Code skill
-├── docs/superpowers/...           # spec + this plan (exist)
+├── docs/                          # design spec + this plan
 └── cli/
     ├── Cargo.toml
     ├── src/
@@ -2029,7 +2029,7 @@ Exit codes: `0` ok · `1` error · `2` claim refused (path occupied).
 
 ## Design
 
-See `docs/superpowers/specs/2026-07-25-coord-design.md`. v1 deliberately
+See `docs/design.md`. v1 deliberately
 excludes daemons, file watching, hook enforcement, and cross-machine
 coordination.
 ````

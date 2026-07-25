@@ -86,7 +86,7 @@ if the edits are truly parallel-safe, re-run with --force to register co-editing
 
 ## Design
 
-See `docs/superpowers/specs/2026-07-25-coord-design.md`. v1 deliberately
+See the [design document](docs/design.md). v1 deliberately
 excludes daemons, file watching, hook enforcement, and cross-machine
 coordination — the rationale is in the spec.
 
